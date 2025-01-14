@@ -1,29 +1,16 @@
-const express = require("express");
-const cors = require("cors");
-const admin = require("firebase-admin");
-
-const authRoutes = require("./auth");
-const betsRoutes = require("./bets");
-const usersRoutes = require("./users");
-const cardRoutes = require("./card");
-const organisationRoutes = require("./organisations");
-
-// Initialisation de Firebase Admin SDK
-admin.initializeApp();
+const express = require('express');
+const cors = require('cors');
+const functions = require('firebase-functions');
 
 const app = express();
 
-// Middleware CORS
+// Utilisation de CORS
 app.use(cors({ origin: true }));
 
-// Utilisation des routes
-app.use("/auth", authRoutes);
-app.use("/bets", betsRoutes);
-app.use("/users", usersRoutes);
-app.use("/card", cardRoutes);
-app.use("/organisations", organisationRoutes);
+// Exemple d'une route simple de test
+app.get('/test', (req, res) => {
+  res.json({ message: 'Backend is working!' });
+});
 
-// Fonction qui sera exportée pour Vercel
-module.exports = (req, res) => {
-  app(req, res);
-};
+// Export de la fonction Firebase
+exports.api = functions.https.onRequest(app);
