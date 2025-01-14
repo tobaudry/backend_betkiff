@@ -13,8 +13,5 @@ const usersRoutes = require("./routes/users");
 // Utiliser les routes
 app.use("/users", usersRoutes);
 
-// Définir le port d'écoute
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Exporter l'application comme une fonction Firebase ou pour Vercel (serverless)
+module.exports = app;
