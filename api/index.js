@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const functions = require('firebase-functions');
 
 const app = express();
 
@@ -12,5 +11,8 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
-// Export de la fonction Firebase
-exports.api = functions.https.onRequest(app);
+// Démarrer le serveur Express
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
