@@ -1,4 +1,4 @@
-const admin = require("firebase-admin");
+const admin = require("./Config/Firebase"); // Assurez-vous d'utiliser le bon chemin
 
 // Référence à la base de données Firebase
 const db = admin.database();

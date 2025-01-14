@@ -1,8 +1,6 @@
-
-const admin = require("firebase-admin");
+const admin = require("./Config/Firebase"); // Assurez-vous d'utiliser le bon chemin
 const express = require("express");
 const cors = require("cors");
-
 
 const app = express();
 
