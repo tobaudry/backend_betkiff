@@ -5,8 +5,8 @@ const db = admin.database();
 
 // Récupérer des utilisateurs
 const getUsers = (req, res) => {
-  const { idOrganisation } = req.body;
-  const dbPath = `organisations/${idOrganisation}/users`;
+  // const { idOrganisation } = req.body;
+  const dbPath = `organisations/-OGVpArBKhsnoCje9i5P/users`;
   db.ref(dbPath)
     .once("value")
     .then((snapshot) => {
