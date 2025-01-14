@@ -20,10 +20,10 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  const { idOrganisation } = req.body;
+  // const { idOrganisation } = req.body;
   const { uid } = req.params;
   console.log("id et uid", idOrganisation, uid);
-  const dbPath = `organisations/${idOrganisation}/users/${uid}`; // Chemin vers l'utilisateur spécifique
+  const dbPath = `organisations/-OGVpArBKhsnoCje9i5P/users/${uid}`; // Chemin vers l'utilisateur spécifique
 
   db.ref(dbPath)
     .once("value")
