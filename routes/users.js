@@ -4,7 +4,7 @@ const router = express.Router();
 const usersController = require("../controllers/usersController");
 
 // Routes utilisateurs
-router.post("/", usersController.getUsers);
+router.get("/", usersController.getUsers);
 router.post("/ById/:uid", usersController.getUserById);
 router.post("/updateMonnaie", usersController.updateUserMoney);
 router.delete("/deleteUsers/:userId", usersController.deleteUser);
