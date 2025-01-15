@@ -24,8 +24,8 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  // const { idOrganisation } = req.body;
-  const { uid, idOrganisation } = req.params;
+  const { idOrganisation } = req.body;
+  const { uid } = req.params;
   console.log("id et uid", idOrganisation, uid);
   const dbPath = `organisations/${idOrganisation}/users/${uid}`; // Chemin vers l'utilisateur spécifique
 
