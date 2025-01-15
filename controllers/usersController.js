@@ -3,10 +3,14 @@ const admin = require("../Config/Firebase"); // Assurez-vous d'utiliser le bon c
 // Référence à la base de données Firebase
 const db = admin.database();
 
+const testFunction = (req, res) => {
+  res.status(200).json({ message: "test réussi" });
+};
+
 // Récupérer des utilisateurs
 const getUsers = (req, res) => {
-  // const { idOrganisation } = req.body;
-  const dbPath = `organisations/-OGVpArBKhsnoCje9i5P/users`;
+  const { idOrganisation } = req.body;
+  const dbPath = `organisations/${idOrganisation}/users`;
   db.ref(dbPath)
     .once("value")
     .then((snapshot) => {
@@ -20,10 +24,10 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  // const { idOrganisation } = req.body;
+  const { idOrganisation } = req.body;
   const { uid } = req.params;
   console.log("id et uid", idOrganisation, uid);
-  const dbPath = `organisations/-OGVpArBKhsnoCje9i5P/users/${uid}`; // Chemin vers l'utilisateur spécifique
+  const dbPath = `organisations/${idOrganisation}/users/${uid}`; // Chemin vers l'utilisateur spécifique
 
   db.ref(dbPath)
     .once("value")
@@ -201,6 +205,7 @@ const getIdOrgaByIdUser = async (req, res) => {
 
 module.exports = {
   getUsers,
+  testFunction
   getUserById,
   updateUserMoney,
   updateUserLastOpening,
