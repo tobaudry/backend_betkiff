@@ -1,7 +1,7 @@
 // controllers/CardController.js
-const admin = require("../Config/Firebase");
+const admin = require("firebase-admin");
+
 const db = admin.database();
-const { get } = require("firebase/database");
 
 // Probabilités globales
 const PROBA_GOLD = 0.01;
