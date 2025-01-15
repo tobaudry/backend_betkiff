@@ -22,7 +22,7 @@ app.use("/users", usersRoutes);
 app.use("/organisations", organisationRoutes);
 app.use("/auth", authRoutes);
 app.use("/bets", betsRoutes);
-app.use("/card", cardRoutes);
+// app.use("/card", cardRoutes);
 
 // Exporter l'application comme une fonction Firebase ou pour Vercel (serverless)
 module.exports = app;
