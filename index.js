@@ -15,7 +15,7 @@ const usersRoutes = require("./routes/users");
 const organisationRoutes = require("./routes/organisations");
 const authRoutes = require("./routes/auth");
 const betsRoutes = require("./routes/bets");
-const cardRoutes = require("./routes/bets");
+const cardRoutes = require("./routes/card");
 
 // Utiliser les routes
 app.use("/users", usersRoutes);
