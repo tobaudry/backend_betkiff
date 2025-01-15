@@ -1,6 +1,5 @@
 // controllers/CardController.js
-const admin = require("firebase-admin");
-
+const admin = require("../Config/Firebase");
 const db = admin.database();
 const { get } = require("firebase/database");
 
