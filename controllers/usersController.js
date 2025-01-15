@@ -205,7 +205,7 @@ const getIdOrgaByIdUser = async (req, res) => {
 
 module.exports = {
   getUsers,
-  testFunction
+  testFunction,
   getUserById,
   updateUserMoney,
   updateUserLastOpening,
