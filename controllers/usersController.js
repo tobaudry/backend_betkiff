@@ -8,20 +8,43 @@ const testFunction = (req, res) => {
 };
 
 // Récupérer des utilisateurs
-const getUsers = (req, res) => {
-  const { idOrganisation } = req.body;
-  const dbPath = `organisations/${idOrganisation}/users`;
-  db.ref(dbPath)
-    .once("value")
-    .then((snapshot) => {
-      const users = snapshot.val();
-      if (!users) {
-        return res.status(404).json({ message: "Aucun utilisateurs trouvé." });
+const getUsers = async (req, res) => {
+  try {
+    // Chemin vers toutes les organisations
+    const organisationsRef = db.ref("organisations");
+
+    // Récupérer toutes les organisations
+    const snapshot = await organisationsRef.once("value");
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "Aucune organisation trouvée." });
+    }
+
+    const organisations = snapshot.val();
+    const allUsers = [];
+
+    // Parcourir chaque organisation et récupérer les utilisateurs
+    for (const orgId in organisations) {
+      const users = organisations[orgId].users;
+      if (users) {
+        for (const userId in users) {
+          allUsers.push({ id: userId, ...users[userId] });
+        }
       }
-      res.status(200).json(users);
-    })
-    .catch((error) => res.status(500).send(error.message));
+    }
+
+    if (allUsers.length === 0) {
+      return res.status(404).json({ message: "Aucun utilisateur trouvé." });
+    }
+
+    // Réponse avec tous les utilisateurs
+    res.status(200).json(allUsers);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des utilisateurs :", error);
+    res.status(500).json({ error: "Erreur interne du serveur." });
+  }
 };
+
 
 const getUserById = (req, res) => {
   const { idOrganisation } = req.body;
