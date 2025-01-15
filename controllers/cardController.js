@@ -1,4 +1,3 @@
-// controllers/CardController.js
 const admin = require("firebase-admin");
 
 const db = admin.database();
@@ -33,7 +32,7 @@ const openPack = async (req, res) => {
         ];
     }
 
-    // Ajoute ou met à jour la carte dans la collection
+    // Références à la base de données
     const userRef = db.ref(
       `organisations/${idOrganisation}/users/${idUser}/collection`,
     );
@@ -41,7 +40,8 @@ const openPack = async (req, res) => {
       `organisations/${idOrganisation}/users/${idUser}/collection/${drawnCard.title}`,
     );
 
-    const snapshot = await get(cardRef);
+    // Utilisez `once('value')` au lieu de `get()`
+    const snapshot = await cardRef.once("value");
 
     if (snapshot.exists()) {
       const currentDoublon = snapshot.val().doublon || 1;
