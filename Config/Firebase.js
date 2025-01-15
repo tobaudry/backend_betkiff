@@ -19,7 +19,7 @@ if (admin.apps.length === 0) {
   // Initialiser Firebase Admin SDK avec ces informations
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://betkiff-5148f-default-rtdb.europe-west1.firebasedatabase.app",
+    databaseURL: "https://enfc-pari-default-rtdb.firebaseio.com",
   });
 } else {
   console.log("Firebase app already initialized.");
