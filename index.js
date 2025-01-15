@@ -12,12 +12,14 @@ const usersRoutes = require("./routes/users");
 const organisationRoutes = require("./routes/organisations");
 const authRoutes = require("./routes/auth");
 const betsRoutes = require("./routes/bets");
+const cardRoutes = require("./routes/bets");
 
 // Utiliser les routes
 app.use("/users", usersRoutes);
 app.use("/organisations", organisationRoutes);
 app.use("/auth", authRoutes);
 app.use("/bets", betsRoutes);
+app.use("/card", cardRoutes);
 
 // Exporter l'application comme une fonction Firebase ou pour Vercel (serverless)
 module.exports = app;
