@@ -13,4 +13,5 @@ router.put("/updateStatus", usersController.updateStatut);
 router.put("/updateUserLastOpening", usersController.updateUserLastOpening);
 router.get("/getIdOrgaByIdUser/:idUser", usersController.getIdOrgaByIdUser);
 
+
 module.exports = router;
