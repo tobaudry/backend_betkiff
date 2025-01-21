@@ -443,6 +443,32 @@ const deleteFlash = async (req, res) => {
   }
 };
 
+const pushUserInListAgreeFlash = async (req, res) => {
+  const { idBet, idUser, idOrganisation } = req.body;
+  if (!idBet || !idUser) {
+    return res.status(400).json({
+      error: "Données manquantes. Assurez-vous d'inclure idUser et idBet.",
+    });
+  }
+
+  try {
+    const flashParticipantRef = db.ref(
+      `organisations/${idOrganisation}/flash/${idBet}/participant/${idUser}`,
+    );
+
+    // Mise à jour des données
+    await flashParticipantRef.update({
+      done : false,
+    });
+
+    res.status(200).json({ success: "view flash mise à jour avec succès." });
+    console.log("Utilisateur enregistré comme ayant vu le défi");
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement de l'utilisateur :", error);
+    res.status(500).json({ error: "Erreur interne du serveur." });
+  }
+}
+
 module.exports = {
   addBets,
   getBets,
@@ -458,4 +484,5 @@ module.exports = {
   updateMiniBets,
   calculateWinningsMiniBets,
   deleteFlash,
+  pushUserInListAgreeFlash,
 };
