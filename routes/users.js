@@ -12,7 +12,7 @@ router.delete("/deleteUsers/:userId", usersController.deleteUser);
 router.put("/updateStatus", usersController.updateStatut);
 router.put("/updateUserLastOpening", usersController.updateUserLastOpening);
 router.get("/getIdOrgaByIdUser/:idUser", usersController.getIdOrgaByIdUser);
-router.post("/saveUserToken", usersController.saveUserToken);
+router.post("/saveToken", usersController.saveUserToken);
 
 
 module.exports = router;
