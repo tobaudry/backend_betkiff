@@ -1,14 +1,15 @@
 const admin = require("firebase-admin");
-
+const { sendNotification } = require("./notificationController");
+const {getUsers} = require("./usersController")
 const db = admin.database();
 
 // Ajouter un pari
 const addBets = (req, res) => {
-  const { path, data } = req.body;
-  if (!path || !data) {
+  const { path, data, idOrganisation } = req.body; // On prend aussi l'idOrganisation
+  if (!path || !data || !idOrganisation) {
     return res
       .status(400)
-      .send("Le corps de la requête doit contenir path et data");
+      .send("Le corps de la requête doit contenir path, data et idOrganisation");
   }
 
   const newBetRef = db.ref(path).push();
@@ -21,11 +22,23 @@ const addBets = (req, res) => {
 
   newBetRef
     .set(betWithId)
-    .then(() =>
-      res
-        .status(200)
-        .send(`${path} ajouté avec succès avec ID ${newBetRef.key}!`),
-    )
+    .then(async () => {
+      // Après avoir ajouté le pari, récupérer les utilisateurs de l'organisation
+      const dbPath = `organisations/${idOrganisation}/users`;
+      const usersSnapshot = await db.ref(dbPath).once("value");
+      const users = usersSnapshot.val();
+      if (!users) {
+        return res.status(404).json({ message: "Aucun utilisateur trouvé pour cette organisation." });
+      }
+
+      // Récupérer les IDs des utilisateurs
+      const userIds = Object.keys(users);
+
+      // Envoyer la notification aux utilisateurs
+      await sendNotification(userIds, "Nouveau pari disponible !", "Un nouveau pari vient d'être créé !");
+
+      res.status(200).send(`${path} ajouté avec succès avec ID ${newBetRef.key} et notifications envoyées !`);
+    })
     .catch((error) => {
       console.error("Erreur Firebase :", error);
       res.status(500).send(error.message);

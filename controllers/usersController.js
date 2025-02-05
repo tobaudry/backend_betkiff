@@ -23,6 +23,21 @@ const getUsers = (req, res) => {
     .catch((error) => res.status(500).send(error.message));
 };
 
+const saveUserToken = async (req, res) => {
+  const { userId, token, idOrganisation } = req.body;
+  if (!userId || !token || !idOrganisation) {
+    return res.status(400).json({
+      error: "Données manquantes. Assurez-vous d'inclure userId et token et idOrganisation.",
+    });
+  }
+  try {
+    await db.ref(`organisations/${idOrganisation}/users/${userId}`).update({ fcmToken: token });
+    res.status(200).json({ success: "Token mise à jour avec succès." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to save token" });
+  }
+};
+
 const getUserById = (req, res) => {
   const { idOrganisation } = req.body;
   const { uid } = req.params;
@@ -212,4 +227,5 @@ module.exports = {
   updateStatut,
   deleteUser,
   getIdOrgaByIdUser,
+  saveUserToken,
 };
