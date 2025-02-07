@@ -4,6 +4,7 @@ const router = express.Router();
 const collectionsController = require("../controllers/collectionsController");
 
 router.post("/addCollection", collectionsController.addCollection);
+router.post("/getCollections", collectionsController.getCollections);
 
 // Exporter le router
 module.exports = router;
