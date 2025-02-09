@@ -69,20 +69,25 @@ const addUrl = async (req, res) => {
 
     console.log("Requête reçue pour ajouter une URL d'image :", req.body);
 
-    const newImageRef = db.ref(path).push(); // Créer une nouvelle référence
+    // Référence vers la liste des URLs dans Firebase
+    const urlsRef = db.ref(path);
 
-    // Ajouter l'URL de l'image dans la base de données
-    const imageWithId = {
-      url, // L'URL de l'image
-    };
+    // Récupérer la liste des URLs existantes
+    const snapshot = await urlsRef.once("value");
+    const existingUrls = snapshot.val() || {}; // Si aucun URL existant, on initialise un objet vide
 
-    await newImageRef.set(imageWithId);
+    // Ajouter l'URL à la liste, en utilisant un index basé sur la taille de la liste
+    const newIndex = Object.keys(existingUrls).length;
+    existingUrls[newIndex] = url; // Ajouter l'URL à la fin de la liste
 
-    console.log("URL d'image ajoutée avec succès :", imageWithId);
+    // Mettre à jour la liste dans Firebase
+    await urlsRef.set(existingUrls);
+
+    console.log("URL d'image ajoutée avec succès :", url);
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
       url,
-    }); // ✅ Renvoie un JSON avec l'ID de l'image et l'URL
+    }); // ✅ Renvoie un JSON avec l'URL
   } catch (error) {
     console.error("Erreur Firebase :", error);
     return res.status(500).json({
