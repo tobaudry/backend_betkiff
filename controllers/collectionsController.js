@@ -70,13 +70,10 @@ const addUrl = async (req, res) => {
     console.log("Requête reçue pour ajouter une URL d'image :", req.body);
 
     const newImageRef = db.ref(path).push(); // Créer une nouvelle référence
-    const idImage = newImageRef.key;
 
     // Ajouter l'URL de l'image dans la base de données
     const imageWithId = {
-      idImage,
       url, // L'URL de l'image
-      timestamp: admin.database.ServerValue.TIMESTAMP, // Optionnel : ajouter un timestamp pour garder la trace du moment de l'ajout
     };
 
     await newImageRef.set(imageWithId);
@@ -84,7 +81,6 @@ const addUrl = async (req, res) => {
     console.log("URL d'image ajoutée avec succès :", imageWithId);
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
-      idImage,
       url,
     }); // ✅ Renvoie un JSON avec l'ID de l'image et l'URL
   } catch (error) {
@@ -99,5 +95,5 @@ const addUrl = async (req, res) => {
 module.exports = {
   addCollection,
   getCollections,
-  addUrl, // Ajoute addUrl ici
+  addUrl,
 };
