@@ -60,8 +60,8 @@ const openPack = async (req, res) => {
 };
 
 const getCards = async (req, res) => {
-  const { idCollection } = req.body; // On récupère l'ID de la collection
-  const dbPath = `collections/${idCollection}/urls`;
+  const { idOrganisation,idCollection } = req.body; // On récupère l'ID de la collection
+  const dbPath = `organisations/${idOrganisation}/collections/${idCollection}/urls`;
 
   db.ref(dbPath)
     .once("value")
