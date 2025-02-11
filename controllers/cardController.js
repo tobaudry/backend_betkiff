@@ -66,10 +66,10 @@ const getCards = async (req, res) => {
   db.ref(dbPath)
     .once("value")
     .then((snapshot) => {
-      const urls = snapshot.val(); // Récupère le tableau d'URLs
+      const urls = snapshot.val(); 
 
       if (!urls || urls.length === 0) {
-        return res.status(404).json({ message: "Aucune carte trouvée." });
+        return res.status(400).json({ message: "Aucune carte trouvée." });
       }
 
       res.status(200).json({ urls });
