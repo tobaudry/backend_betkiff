@@ -72,22 +72,15 @@ const addUrl = async (req, res) => {
     // Référence vers la liste des URLs dans Firebase
     const urlsRef = db.ref(path);
 
-    // Récupérer la liste des URLs existantes
-    const snapshot = await urlsRef.once("value");
-    const existingUrls = snapshot.val() || {}; // Si aucun URL existant, on initialise un objet vide
-
-    // Ajouter l'URL à la liste, en utilisant un index basé sur la taille de la liste
-    const newIndex = Object.keys(existingUrls).length;
-    existingUrls[newIndex] = url; // Ajouter l'URL à la fin de la liste
-
-    // Mettre à jour la liste dans Firebase
-    await urlsRef.set(existingUrls);
+    // Ajouter l'URL à la liste, avec un uid généré automatiquement par Firebase
+    const newUrlRef = urlsRef.push(); // Génère un UID unique automatiquement
+    await newUrlRef.set(url);
 
     console.log("URL d'image ajoutée avec succès :", url);
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
       url,
-    }); // ✅ Renvoie un JSON avec l'URL
+    });
   } catch (error) {
     console.error("Erreur Firebase :", error);
     return res.status(500).json({
