@@ -59,11 +59,12 @@ const getCollections = (req, res) => {
 
 const addUrl = async (req, res) => {
   try {
-    const { path, url } = req.body;
+    const { path, url, rarity } = req.body;
 
-    if (!path || !url) {
+    if (!path || !url || !rarity) {
       return res.status(400).json({
-        message: "Le corps de la requête doit contenir 'path' et 'url'.",
+        message:
+          "Le corps de la requête doit contenir 'path', 'url' et 'rarity'.",
       });
     }
 
@@ -75,6 +76,13 @@ const addUrl = async (req, res) => {
     // Ajouter l'URL à la liste, avec un uid généré automatiquement par Firebase
     const newUrlRef = urlsRef.push(); // Génère un UID unique automatiquement
     await newUrlRef.set(url);
+
+    // Ajouter l'ID de la carte dans le dossier correspondant à la rareté
+    const rarityRef = db.ref(
+      `organisations/${req.body.idOrganisation}/collections/${req.body.idCollection}/${rarity}`
+    );
+    const cardId = newUrlRef.key; // Utiliser l'ID généré de la carte
+    await rarityRef.push(cardId); // Ajouter l'ID de la carte au dossier correspondant
 
     console.log("URL d'image ajoutée avec succès :", url);
     return res.status(200).json({
