@@ -4,8 +4,8 @@ const db = admin.database();
 
 // Probabilités globales
 const ultraRare = 0.01;
-const PROBA_OBJECT = 0.1;
-const rare = 0.3;
+const rare = 0.1;
+const commun = 0.3;
 
 const openPack = async (req, res) => {
   const { idUser, cardsData, idOrganisation, idCollection } = req.body;
@@ -15,12 +15,12 @@ const openPack = async (req, res) => {
     let drawnCard;
     if (randomNumber < ultraRare) {
       drawnCard = cardsData.goldCard[0]; // Une seule carte Gold
-    } else if (randomNumber < PROBA_OBJECT) {
+    } else if (randomNumber < rare) {
       drawnCard =
         cardsData.objectCards[
           Math.floor(Math.random() * cardsData.objectCards.length)
         ];
-    } else if (randomNumber < rare) {
+    } else if (randomNumber < commun) {
       drawnCard =
         cardsData.prezCards[
           Math.floor(Math.random() * cardsData.prezCards.length)
