@@ -3,24 +3,24 @@ const admin = require("firebase-admin");
 const db = admin.database();
 
 // Probabilités globales
-const PROBA_GOLD = 0.01;
+const ultraRare = 0.01;
 const PROBA_OBJECT = 0.1;
-const PROBA_PREZ = 0.3;
+const rare = 0.3;
 
 const openPack = async (req, res) => {
-  const { idUser, cardsData, idOrganisation } = req.body;
+  const { idUser, cardsData, idOrganisation, idCollection } = req.body;
   try {
     const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
     let drawnCard;
-    if (randomNumber < PROBA_GOLD) {
+    if (randomNumber < ultraRare) {
       drawnCard = cardsData.goldCard[0]; // Une seule carte Gold
     } else if (randomNumber < PROBA_OBJECT) {
       drawnCard =
         cardsData.objectCards[
           Math.floor(Math.random() * cardsData.objectCards.length)
         ];
-    } else if (randomNumber < PROBA_PREZ) {
+    } else if (randomNumber < rare) {
       drawnCard =
         cardsData.prezCards[
           Math.floor(Math.random() * cardsData.prezCards.length)
@@ -34,10 +34,10 @@ const openPack = async (req, res) => {
 
     // Références à la base de données
     const userRef = db.ref(
-      `organisations/${idOrganisation}/users/${idUser}/collection`,
+      `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}`,
     );
     const cardRef = db.ref(
-      `organisations/${idOrganisation}/users/${idUser}/collection/${drawnCard.title}`,
+      `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}/${drawnCard.title}`,
     );
 
     // Utilisez `once('value')` au lieu de `get()`
