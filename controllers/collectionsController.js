@@ -59,29 +59,32 @@ const getCollections = (req, res) => {
 
 const addUrl = async (req, res) => {
   try {
-    const { path, url, rarity, idCard, idOrganisation, idCollection } = req.body;
+    const { path, url, rarity, idCard } = req.body;
 
-    if (!path || !url || !rarity || !idCard || !idOrganisation || !idCollection) {
+    if (!path || !url || !rarity) {
       return res.status(400).json({
         message:
-          "Le corps de la requête doit contenir 'path', 'url', 'rarity', 'idCard', 'idOrganisation' et 'idCollection'.",
+          "Le corps de la requête doit contenir 'path', 'url' et 'rarity'.",
       });
     }
 
     console.log("Requête reçue pour ajouter une URL d'image :", req.body);
 
     // Référence vers la liste des URLs dans Firebase
-    const urlsRef = db.ref(`${path}/${idCard}`); // Utilisation de l'ID de la carte comme clé
-    await urlsRef.set(url); // Enregistre l'URL sous l'ID de la carte
+    const urlsRef = db.ref(path);
+
+    // Ajouter l'URL à la liste, avec un uid généré automatiquement par Firebase
+    const newUrlRef = urlsRef.push(); // Génère un UID unique automatiquement
+    await newUrlRef.set(url);
 
     // Ajouter l'ID de la carte dans le dossier correspondant à la rareté
     const rarityRef = db.ref(
       `organisations/${idOrganisation}/collections/${idCollection}/${rarity}/${idCard}`
     );
-    await rarityRef.set(true); // Enregistre directement sous l'ID de la carte
+    const cardId = newUrlRef.key; // Utiliser l'ID généré de la carte
+    await rarityRef.push(idCard); // Ajouter l'ID de la carte au dossier correspondant
 
-    console.log(`Carte ${idCard} ajoutée avec succès dans la catégorie ${rarity}`);
-
+    console.log("URL d'image ajoutée avec succès :", url);
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
       url,
@@ -94,7 +97,6 @@ const addUrl = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   addCollection,
