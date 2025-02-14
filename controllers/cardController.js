@@ -2,10 +2,8 @@ const admin = require("firebase-admin");
 
 const db = admin.database();
 
-// Probabilités globales
-const ultraRare = 0.01;
-const rare = 0.1;
-const commun = 0.3;
+const PROBA_ULTRA_RARE = 0.05;
+const PROBA_RARE = 0.25;
 
 const openPack = async (req, res) => {
   const { idUser, cardsData, idOrganisation } = req.body;
@@ -13,22 +11,20 @@ const openPack = async (req, res) => {
     const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
     let drawnCard;
-    if (randomNumber < PROBA_GOLD) {
-      drawnCard = cardsData.goldCard[0]; // Une seule carte Gold
-    } else if (randomNumber < PROBA_OBJECT) {
+    if (randomNumber < PROBA_ULTRA_RARE) {
       drawnCard =
-        cardsData.objectCards[
-          Math.floor(Math.random() * cardsData.objectCards.length)
+        cardsData.ultraRareCard[
+          Math.floor(Math.random() * cardsData.ultraRareCard.length)
         ];
-    } else if (randomNumber < PROBA_PREZ) {
+    } else if (randomNumber < PROBA_RARE) {
       drawnCard =
-        cardsData.prezCards[
-          Math.floor(Math.random() * cardsData.prezCards.length)
+        cardsData.rareCard[
+          Math.floor(Math.random() * cardsData.rareCard.length)
         ];
     } else {
       drawnCard =
-        cardsData.possibleCards[
-          Math.floor(Math.random() * cardsData.possibleCards.length)
+        cardsData.communeCard[
+          Math.floor(Math.random() * cardsData.communeCard.length)
         ];
     }
 
