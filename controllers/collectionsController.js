@@ -59,34 +59,33 @@ const getCollections = (req, res) => {
 
 const addUrl = async (req, res) => {
   try {
-    const { path, url, rarity, idCard } = req.body;
+    const { path, url, rarity, idOrganisation, idCollection } = req.body;
 
-    if (!path || !url || !rarity) {
+    if (!path || !url || !rarity || !idOrganisation || !idCollection) {
       return res.status(400).json({
         message:
-          "Le corps de la requête doit contenir 'path', 'url' et 'rarity'.",
+          "Le corps de la requête doit contenir 'path', 'url', 'rarity', 'idOrganisation' et 'idCollection'.",
       });
     }
 
     console.log("Requête reçue pour ajouter une URL d'image :", req.body);
 
-    // Référence vers la liste des URLs dans Firebase
-    const urlsRef = db.ref(path);
-
-    // Ajouter l'URL à la liste, avec un uid généré automatiquement par Firebase
-    const newUrlRef = urlsRef.push(); // Génère un UID unique automatiquement
+    // 1️⃣ Ajouter l'URL à la base de données et récupérer son ID unique
+    const newUrlRef = db.ref(path).push(); // Génère un ID unique
     await newUrlRef.set(url);
+    const idCard = newUrlRef.key; // Récupération de l'ID généré
 
-    // Ajouter l'ID de la carte dans le dossier correspondant à la rareté
+    // 2️⃣ Enregistrer la carte sous son ID dans la section de rareté
     const rarityRef = db.ref(
       `organisations/${idOrganisation}/collections/${idCollection}/${rarity}/${idCard}`
     );
-    const cardId = newUrlRef.key; // Utiliser l'ID généré de la carte
-    await rarityRef.push(idCard); // Ajouter l'ID de la carte au dossier correspondant
+    await rarityRef.set(idCard); // Stocke l'ID sous lui-même
 
-    console.log("URL d'image ajoutée avec succès :", url);
+    console.log(`Carte ${idCard} ajoutée avec succès dans la catégorie ${rarity}`);
+
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
+      idCard, // Retourne l'ID généré
       url,
     });
   } catch (error) {
@@ -97,6 +96,7 @@ const addUrl = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   addCollection,
