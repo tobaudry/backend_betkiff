@@ -6,7 +6,7 @@ const PROBA_ULTRA_RARE = 0.05;
 const PROBA_RARE = 0.25;
 
 const openPack = async (req, res) => {
-  const { idUser, cardsData, idOrganisation } = req.body;
+  const { idUser, cardsData, idOrganisation,idCollection } = req.body;
   try {
     const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
