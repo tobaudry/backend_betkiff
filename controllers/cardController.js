@@ -6,7 +6,7 @@ const PROBA_ULTRA_RARE = 0.05;
 const PROBA_RARE = 0.25;
 
 const openPack = async (req, res) => {
-  const { idUser, cardsData, idOrganisation,idCollection } = req.body;
+  const { idUser, cardsData, idOrganisation } = req.body;
   try {
     const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
@@ -16,7 +16,7 @@ const openPack = async (req, res) => {
         cardsData.ultraRareCard[
           Math.floor(Math.random() * cardsData.ultraRareCard.length)
         ];
-    } else if (randomNumber < PROBA_RARE) {
+    } else if (randomNumber < PROBA_RARE && randomNumber >= PROBA_ULTRA_RARE) {
       drawnCard =
         cardsData.rareCard[
           Math.floor(Math.random() * cardsData.rareCard.length)
