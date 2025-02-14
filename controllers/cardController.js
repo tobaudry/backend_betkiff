@@ -8,19 +8,19 @@ const rare = 0.1;
 const commun = 0.3;
 
 const openPack = async (req, res) => {
-  const { idUser, cardsData, idOrganisation, idCollection } = req.body;
+  const { idUser, cardsData, idOrganisation } = req.body;
   try {
     const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
     let drawnCard;
-    if (randomNumber < ultraRare) {
+    if (randomNumber < PROBA_GOLD) {
       drawnCard = cardsData.goldCard[0]; // Une seule carte Gold
-    } else if (randomNumber < rare) {
+    } else if (randomNumber < PROBA_OBJECT) {
       drawnCard =
         cardsData.objectCards[
           Math.floor(Math.random() * cardsData.objectCards.length)
         ];
-    } else if (randomNumber < commun) {
+    } else if (randomNumber < PROBA_PREZ) {
       drawnCard =
         cardsData.prezCards[
           Math.floor(Math.random() * cardsData.prezCards.length)
