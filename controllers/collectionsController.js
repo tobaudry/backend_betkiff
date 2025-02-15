@@ -101,7 +101,7 @@ const addUrl = async (req, res) => {
 
 const getCollectionFromId = async (req, res) => {
   try {
-    const { idOrganisation, idCollection } = req.params;
+    const { idOrganisation, idCollection } = req.body;
 
     if (!idOrganisation || !idCollection) {
       return res.status(400).json({
