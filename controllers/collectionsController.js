@@ -81,7 +81,9 @@ const addUrl = async (req, res) => {
     );
     await rarityRef.set(idCard); // Stocke l'ID sous lui-même
 
-    console.log(`Carte ${idCard} ajoutée avec succès dans la catégorie ${rarity}`);
+    console.log(
+      `Carte ${idCard} ajoutée avec succès dans la catégorie ${rarity}`
+    );
 
     return res.status(200).json({
       message: "URL d'image ajoutée avec succès.",
@@ -97,9 +99,43 @@ const addUrl = async (req, res) => {
   }
 };
 
+const getCollectionFromId = async (req, res) => {
+  try {
+    const { idOrganisation, idCollection } = req.params;
+
+    if (!idOrganisation || !idCollection) {
+      return res.status(400).json({
+        message:
+          "Les paramètres 'idOrganisation' et 'idCollection' sont requis.",
+      });
+    }
+
+    const collectionRef = db.ref(
+      `organisations/${idOrganisation}/collections/${idCollection}`
+    );
+
+    const snapshot = await collectionRef.once("value");
+    const collection = snapshot.val();
+
+    if (!collection) {
+      return res.status(404).json({
+        message: "Collection non trouvée.",
+      });
+    }
+
+    return res.status(200).json(collection);
+  } catch (error) {
+    console.error("Erreur Firebase :", error);
+    return res.status(500).json({
+      message: "Erreur lors de la récupération de la collection.",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   addCollection,
   getCollections,
   addUrl,
+  getCollectionFromId, // Ajout de la nouvelle fonction ici
 };

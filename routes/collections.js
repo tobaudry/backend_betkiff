@@ -6,6 +6,10 @@ const collectionsController = require("../controllers/collectionsController");
 router.post("/addCollection", collectionsController.addCollection);
 router.post("/getCollections", collectionsController.getCollections);
 router.post("/addUrl", collectionsController.addUrl);
+router.get(
+  "/collection/:idOrganisation/:idCollection",
+  collectionsController.getCollectionFromId
+);
 
 // Exporter le router
 module.exports = router;
