@@ -5,7 +5,7 @@ const db = admin.database();
 const PROBA_ULTRA_RARE = 0.05;
 const PROBA_RARE = 0.25;
 
-const PROBA_GOLD = 0.01;
+const PROBA_GOLD = 0.005;
 const PROBA_OBJECT = 0.1;
 const PROBA_PREZ = 0.3;
 
