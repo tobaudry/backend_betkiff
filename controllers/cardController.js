@@ -5,9 +5,9 @@ const db = admin.database();
 const PROBA_ULTRA_RARE = 0.05;
 const PROBA_RARE = 0.25;
 
-const PROBA_GOLD = 0.005;
-const PROBA_OBJECT = 0.1;
-const PROBA_PREZ = 0.3;
+const PROBA_GOLD = 0.08;
+const PROBA_OBJECT = 0.85;
+const PROBA_PREZ = 0.9;
 
 const openPack = async (req, res) => {
   const { idUser, cardsData, idOrganisation } = req.body;
@@ -16,7 +16,10 @@ const openPack = async (req, res) => {
 
     let drawnCard;
     if (randomNumber < PROBA_GOLD) {
-      drawnCard = cardsData.goldCard[0]; // Une seule carte Gold
+      drawnCard =
+        cardsData.goldCards[
+          Math.floor(Math.random() * cardsData.goldCards.length)
+        ];
     } else if (randomNumber < PROBA_OBJECT) {
       drawnCard =
         cardsData.objectCards[
