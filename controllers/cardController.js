@@ -16,7 +16,7 @@ const openPack = async (req, res) => {
     let drawnCard;
     if (randomNumber < PROBA_GOLD) {
       drawnCard =
-        cardsData.goldCards[
+        cardsData.goldCard[
           Math.floor(Math.random() * cardsData.goldCard.length)
         ];
     } else if (randomNumber < PROBA_OBJECT) {
