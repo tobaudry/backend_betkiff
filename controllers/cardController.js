@@ -12,13 +12,12 @@ const PROBA_PREZ = 0.9;
 const openPack = async (req, res) => {
   const { idUser, cardsData, idOrganisation } = req.body;
   try {
-    const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
-
+    const randomNumber = Math.random();
     let drawnCard;
     if (randomNumber < PROBA_GOLD) {
       drawnCard =
         cardsData.goldCards[
-          Math.floor(Math.random() * cardsData.goldCards.length)
+          Math.floor(Math.random() * cardsData.goldCard.length)
         ];
     } else if (randomNumber < PROBA_OBJECT) {
       drawnCard =
