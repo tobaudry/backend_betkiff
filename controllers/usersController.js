@@ -132,7 +132,7 @@ const updateStatut = async (req, res) => {
     }
 
     // Mise à jour du statut dans la base de données
-    await userRef.update({ statusUser: newStatus });
+    await userRef.update({ statutUser: newStatut });
 
     return res.status(200).json({ message: "Statut mis à jour avec succès" });
   } catch (error) {
