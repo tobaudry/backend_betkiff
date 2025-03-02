@@ -102,16 +102,16 @@ const updateUserLastOpening = async (req, res) => {
 };
 
 const updateStatut = async (req, res) => {
-  const { idUser, newStatus, idOrganisation } = req.body;
+  const { idUser, newStatut, idOrganisation } = req.body;
 
   // Vérifier si le statut est valide
-  if (newStatus !== "admin" && newStatus !== "utilisateur") {
+  if (newStatut !== "admin" && newStatut !== "utilisateur") {
     return res.status(400).json({
       message: "Status invalide, choisissez entre 'admin' ou 'utilisateur'",
     });
   }
 
-  if (!idUser || newStatus == null) {
+  if (!idUser || newStatut == null) {
     return res.status(400).json({
       error: "Données manquantes. Assurez-vous d'inclure userId et newMoney.",
     });
