@@ -103,6 +103,9 @@ const updateUserLastOpening = async (req, res) => {
 
 const updateStatut = async (req, res) => {
   const { idUser, newStatut, idOrganisation } = req.body;
+  console.log("idUser", idUser);
+  console.log("newStatut", newStatut);
+  console.log("idOrganisation", idOrganisation);
 
   // Vérifier si le statut est valide
   if (newStatut !== "admin" && newStatut !== "utilisateur") {
