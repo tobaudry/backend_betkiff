@@ -4,6 +4,7 @@ const db = admin.database();
 
 
 const getUsersMailByOrgansiation = async (idOrganisation) => {
+  console.log("idOrganisation", idOrganisation); 
   const dbPath = `organisations/${idOrganisation}/users`;
   try {
     const usersSnapshot = await db.ref(dbPath).once("value");
