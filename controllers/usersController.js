@@ -102,16 +102,19 @@ const updateUserLastOpening = async (req, res) => {
 };
 
 const updateStatut = async (req, res) => {
-  const { idUser, newStatus, idOrganisation } = req.body;
+  const { idUser, newStatut, idOrganisation } = req.body;
+  console.log("idUser", idUser);
+  console.log("newStatut", newStatut);
+  console.log("idOrganisation", idOrganisation);
 
   // Vérifier si le statut est valide
-  if (newStatus !== "admin" && newStatus !== "utilisateur") {
+  if (newStatut !== "admin" && newStatut !== "utilisateur") {
     return res.status(400).json({
       message: "Status invalide, choisissez entre 'admin' ou 'utilisateur'",
     });
   }
 
-  if (!idUser || newStatus == null) {
+  if (!idUser || newStatut == null) {
     return res.status(400).json({
       error: "Données manquantes. Assurez-vous d'inclure userId et newMoney.",
     });
@@ -129,7 +132,7 @@ const updateStatut = async (req, res) => {
     }
 
     // Mise à jour du statut dans la base de données
-    await userRef.update({ statusUser: newStatus });
+    await userRef.update({ statutUser: newStatut });
 
     return res.status(200).json({ message: "Statut mis à jour avec succès" });
   } catch (error) {

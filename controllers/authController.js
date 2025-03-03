@@ -24,7 +24,7 @@ const registerAndAddUser = async (req, res) => {
       email,
       nomUser,
       nbMonnaie: 20,
-      statusUser: "Utilisateur",
+      statutUser: "Utilisateur",
       idUser: uid,
       idOrganisation,
     };
