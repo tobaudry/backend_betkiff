@@ -2,6 +2,22 @@ const admin = require("firebase-admin");
 
 const db = admin.database();
 
+
+const getUsersMailByOrgansiation = async (idOrganisation) => {
+  const dbPath = `organisations/${idOrganisation}/users`;
+  try {
+    const usersSnapshot = await db.ref(dbPath).once("value");
+    const users = usersSnapshot.val();
+    const emails = Object.values(users).map(user => user.email);
+    return emails;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des emails :", error);
+    throw new Error("Erreur serveur.");
+  }
+};
+
+
+
 // Ajouter un pari
 const addBets = async(req, res) => {
   const { path, data } = req.body;
