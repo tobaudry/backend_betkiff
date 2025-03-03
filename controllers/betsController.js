@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const db = admin.database();
 
 // Ajouter un pari
-const addBets = (req, res) => {
+const addBets = async(req, res) => {
   const { path, data } = req.body;
   if (!path || !data) {
     return res
@@ -13,6 +13,7 @@ const addBets = (req, res) => {
 
   const newBetRef = db.ref(path).push();
 
+  
   // Ajout de l'ID généré dans les données
   const betWithId = {
     ...data,
@@ -30,7 +31,34 @@ const addBets = (req, res) => {
       console.error("Erreur Firebase :", error);
       res.status(500).send(error.message);
     });
+  
+    try{
+      const idOrganisation = "-OIMMMEbw-_zOxRY6pYD";
+      const emails = await getUsersMailByOrgansiation(idOrganisation);
+    
+      // Préparer l'email
+      const emailData = {
+        sender: { email: 'betkiff@gmail.com' },
+        to: emails.map(email => ({ email })),
+        subject: 'Nouveau pari ajouté !',
+        htmlContent: `<html><body><p>Un nouveau pari a été ajouté !</p></body></html>`,
+      };
+    
+      await axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
+        headers: {
+          'api-key': process.env.SENDINBLUE_API_KEY,  // Remplace avec ta clé API Brevo
+          'Content-Type': 'application/json',
+        },
+      });
+    
+      // Réponse de succès
+      res.status(200).send(`Pari ajouté avec succès et email envoyé aux utilisateurs avec ID ${newBetRef.key}!`);
+    } catch (error) {
+      console.error("Erreur :", error);
+      res.status(500).send(error.message);
+    }
 };
+
 
 // récuperer les paris
 const getBets = (req, res) => {
