@@ -5,9 +5,9 @@ const db = admin.database();
 const PROBA_ULTRA_RARE = 0.05;
 const PROBA_RARE = 0.25;
 
-const PROBA_GOLD = 0.84;
-const PROBA_OBJECT = 0.89;
-const PROBA_PREZ = 0.9;
+const PROBA_GOLD = 0.01;
+const PROBA_OBJECT = 0.15;
+const PROBA_PREZ = 0.3;
 
 const openPack = async (req, res) => {
   const { idUser, cardsData, idOrganisation } = req.body;
