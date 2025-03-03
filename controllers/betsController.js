@@ -9,7 +9,8 @@ const getUsersMailByOrgansiation = async (idOrganisation) => {
   try {
     const usersSnapshot = await db.ref(dbPath).once("value");
     const users = usersSnapshot.val();
-    const emails = Object.values(users).map(user => user.Email);
+    const emails = Object.values(users).map(user => user.email);
+    console.log("emails", emails);
     return emails;
   } catch (error) {
     console.error("Erreur lors de la récupération des emails :", error);
