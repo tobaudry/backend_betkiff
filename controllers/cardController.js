@@ -65,70 +65,56 @@ const openPack = async (req, res) => {
 
 const openPackNew = async (req, res) => {
   const { idUser, cardsData, idOrganisation, idCollection } = req.body;
-  try {
-    const randomNumber = Math.random(); // Génère un nombre entre 0 et 1
 
-    let drawnCard;
-    if (randomNumber < PROBA_ULTRA_RARE) {
-      drawnCard =
-        cardsData.ultraRareCard[
-          Math.floor(Math.random() * cardsData.ultraRareCard.length)
-        ];
-    } else if (randomNumber < PROBA_RARE && randomNumber >= PROBA_ULTRA_RARE) {
-      drawnCard =
-        cardsData.rareCard[
-          Math.floor(Math.random() * cardsData.rareCard.length)
-        ];
-    } else {
-      drawnCard =
-        cardsData.communeCard[
-          Math.floor(Math.random() * cardsData.communeCard.length)
-        ];
+  try {
+    const probabilities = [
+      { rarity: "ultraRareCard", threshold: PROBA_ULTRA_RARE },
+      { rarity: "rareCard", threshold: PROBA_RARE },
+      { rarity: "communeCard", threshold: 1 },
+    ];
+
+    const randomNumber = Math.random();
+    const selectedRarity = probabilities.find(
+      (p, index) =>
+        randomNumber < p.threshold || index === probabilities.length - 1
+    ).rarity;
+
+    const drawnCard =
+      cardsData[selectedRarity][
+        Math.floor(Math.random() * cardsData[selectedRarity].length)
+      ];
+
+    if (!drawnCard) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Aucune carte disponible." });
     }
 
-    // Références à la base de données
-    const userRef = db.ref(
-      `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}`
-    );
     const cardRef = db.ref(
       `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}/${drawnCard.id}`
     );
 
-    // Utilisez `once('value')` au lieu de `get()`
-    const snapshot = await cardRef.once("value");
+    // Utilisation d'une transaction pour éviter les conflits
+    await cardRef.transaction((currentData) => {
+      if (currentData === null) {
+        return { doublon: 1 };
+      } else {
+        return { doublon: currentData.doublon + 1 };
+      }
+    });
 
-    if (snapshot.exists()) {
-      const currentDoublon = snapshot.val().doublon || 1;
-      await cardRef.update({ doublon: currentDoublon + 1 });
-    } else {
-      await userRef.update({
-        [drawnCard.title]: { doublon: 1 },
-      });
-    }
-
-    res.status(200).json({ success: true, card: drawnCard });
+    res.status(200).json({
+      success: true,
+      card: {
+        id: drawnCard.id,
+        imageUrl: drawnCard.imageUrl,
+        title: drawnCard.title,
+      },
+    });
   } catch (error) {
     console.error("Erreur lors de l'ouverture du pack :", error);
     res.status(500).json({ success: false, error: error.message });
   }
-};
-
-const getCards = async (req, res) => {
-  const { idOrganisation, idCollection } = req.body; // On récupère l'ID de la collection
-  const dbPath = `organisations/${idOrganisation}/collections/${idCollection}/urls`;
-
-  db.ref(dbPath)
-    .once("value")
-    .then((snapshot) => {
-      const urls = snapshot.val();
-
-      if (!urls || urls.length === 0) {
-        return res.status(400).json({ message: "Aucune carte trouvée." });
-      }
-
-      res.status(200).json({ urls });
-    })
-    .catch((error) => res.status(500).send(error.message));
 };
 
 module.exports = {
