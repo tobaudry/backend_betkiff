@@ -126,18 +126,18 @@ const openPackNew = async (req, res) => {
 
 const getCards = async (req, res) => {
   const { idOrganisation, idCollection } = req.body; // On récupère l'ID de la collection
-  const dbPath = `organisations/${idOrganisation}/collections/${idCollection}/urls`;
+  const dbPath = `organisations/${idOrganisation}/collections/${idCollection}`;
 
   db.ref(dbPath)
     .once("value")
     .then((snapshot) => {
-      const urls = snapshot.val();
+      const collectionData = snapshot.val();
 
-      if (!urls || urls.length === 0) {
+      if (!collectionData || collectionData.length === 0) {
         return res.status(400).json({ message: "Aucune carte trouvée." });
       }
 
-      res.status(200).json({ urls });
+      res.status(200).json({ collectionData });
     })
     .catch((error) => res.status(500).send(error.message));
 };
