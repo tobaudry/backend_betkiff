@@ -91,7 +91,7 @@ const openPackNew = async (req, res) => {
       `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}`
     );
     const cardRef = db.ref(
-      `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}/${drawnCard.title}`
+      `organisations/${idOrganisation}/users/${idUser}/collection/${idCollection}/${drawnCard.id}`
     );
 
     // Utilisez `once('value')` au lieu de `get()`
