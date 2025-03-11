@@ -43,19 +43,47 @@ const addCollection = async (req, res) => {
 const getCollections = (req, res) => {
   const { idOrganisation } = req.body;
   const dbPath = `organisations/${idOrganisation}/collections`;
+
   db.ref(dbPath)
     .once("value")
     .then((snapshot) => {
       const collections = snapshot.val();
+
       if (!collections) {
         return res
           .status(404)
-          .json({ message: "Aucune collection trouvée trouvé." });
+          .json({ message: "Aucune collection trouvée." });
       }
-      res.status(200).json(collections);
+
+      // Filtrer les collections pour ne garder que celles qui ont
+      // au moins 1 carte dans commune, rare et ultraRare
+      const filteredCollections = {};
+
+      Object.entries(collections).forEach(([collectionKey, collectionData]) => {
+        // Sécurité : vérifier que collectionData contient bien les trois clés
+        if (
+          collectionData.commune &&
+          collectionData.rare &&
+          collectionData.ultraRare
+        ) {
+          // Vérifier qu'il y a au moins 1 carte dans chaque rareté
+          const hasCommune = Object.keys(collectionData.commune).length > 0;
+          const hasRare = Object.keys(collectionData.rare).length > 0;
+          const hasUltraRare =
+            Object.keys(collectionData.ultraRare).length > 0;
+
+          if (hasCommune && hasRare && hasUltraRare) {
+            filteredCollections[collectionKey] = collectionData;
+          }
+        }
+      });
+
+      // On renvoie seulement les collections filtrées
+      res.status(200).json(filteredCollections);
     })
     .catch((error) => res.status(500).send(error.message));
 };
+
 
 const addUrl = async (req, res) => {
   try {
