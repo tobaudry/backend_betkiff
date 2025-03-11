@@ -43,6 +43,23 @@ const addCollection = async (req, res) => {
 const getCollections = (req, res) => {
   const { idOrganisation } = req.body;
   const dbPath = `organisations/${idOrganisation}/collections`;
+  db.ref(dbPath)
+    .once("value")
+    .then((snapshot) => {
+      const collections = snapshot.val();
+      if (!collections) {
+        return res
+          .status(404)
+          .json({ message: "Aucune collection trouvée trouvé." });
+      }
+      res.status(200).json(collections);
+    })
+    .catch((error) => res.status(500).send(error.message));
+};
+
+const getCollectionsWithConditionOnCard = (req, res) => {
+  const { idOrganisation } = req.body;
+  const dbPath = `organisations/${idOrganisation}/collections`;
 
   db.ref(dbPath)
     .once("value")
@@ -132,4 +149,5 @@ module.exports = {
   addCollection,
   getCollections,
   addUrl,
+  getCollectionsWithConditionOnCard
 };
