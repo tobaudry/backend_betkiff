@@ -143,7 +143,7 @@ const getCards = async (req, res) => {
 };
 
 const migrateCard = async (req, res) => {
-  const { idOrganisation } = req.body;
+  const { idOrganisation, idCollection } = req.body;
 
   // Mapping des anciens titres aux nouveaux IDs
   const cardMapping = {
@@ -177,7 +177,6 @@ const migrateCard = async (req, res) => {
   };
 
   try {
-    // Récupérer tous les utilisateurs de l'organisation
     const usersRef = db.ref(`organisations/${idOrganisation}/users`);
     const usersSnapshot = await usersRef.once("value");
     const usersData = usersSnapshot.val();
@@ -188,10 +187,9 @@ const migrateCard = async (req, res) => {
         .json({ success: false, message: "Aucun utilisateur trouvé." });
     }
 
-    // Parcourir chaque utilisateur et mettre à jour sa collection de cartes
     for (const userId in usersData) {
       const userCollectionRef = db.ref(
-        `organisations/${idOrganisation}/users/${userId}/collection`
+        `organisations/${idOrganisation}/users/${userId}/collection/${idCollection}`
       );
       const userCollectionSnapshot = await userCollectionRef.once("value");
       const userCollection = userCollectionSnapshot.val();
@@ -202,22 +200,28 @@ const migrateCard = async (req, res) => {
       for (const oldTitle in userCollection) {
         const newId = cardMapping[oldTitle];
         if (newId) {
-          updates[newId] = userCollection[oldTitle]; // Copier les données existantes
-          updates[newId].title = newId; // Assurer la cohérence
+          updates[newId] = userCollection[oldTitle];
+          updates[newId].title = newId;
         }
       }
 
-      // Appliquer les mises à jour en écrasant l'ancienne collection
       await userCollectionRef.set(updates);
     }
 
     res
       .status(200)
-      .json({ success: true, message: "Migration terminée avec succès." });
+      .json({ success: true, message: "Migration terminée avec succès !" });
   } catch (error) {
     console.error("Erreur lors de la migration des cartes :", error);
     res.status(500).json({ success: false, error: error.message });
   }
+};
+
+module.exports = {
+  openPack,
+  openPackNew,
+  getCards,
+  migrateCard,
 };
 
 module.exports = {
