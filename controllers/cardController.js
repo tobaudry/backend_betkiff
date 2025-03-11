@@ -189,7 +189,7 @@ const migrateCard = async (req, res) => {
 
     for (const userId in usersData) {
       const userCollectionRef = db.ref(
-        `organisations/${idOrganisation}/users/${userId}/collection/${idCollection}`
+        `organisations/${idOrganisation}/users/${userId}/collection`
       );
       const userCollectionSnapshot = await userCollectionRef.once("value");
       const userCollection = userCollectionSnapshot.val();
@@ -197,11 +197,13 @@ const migrateCard = async (req, res) => {
       if (!userCollection) continue;
 
       const updates = {};
+      updates[idCollection] = {}; // Créer le dossier idCollection sous collection
+
       for (const oldTitle in userCollection) {
         const newId = cardMapping[oldTitle];
         if (newId) {
-          updates[newId] = userCollection[oldTitle];
-          updates[newId].title = newId;
+          updates[idCollection][newId] = userCollection[oldTitle];
+          updates[idCollection][newId].title = newId;
         }
       }
 
@@ -215,13 +217,6 @@ const migrateCard = async (req, res) => {
     console.error("Erreur lors de la migration des cartes :", error);
     res.status(500).json({ success: false, error: error.message });
   }
-};
-
-module.exports = {
-  openPack,
-  openPackNew,
-  getCards,
-  migrateCard,
 };
 
 module.exports = {
