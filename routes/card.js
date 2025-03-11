@@ -7,5 +7,6 @@ const cardController = require("../controllers/cardController");
 router.post("/openPack", cardController.openPack);
 router.post("/openPackNew", cardController.openPackNew);
 router.post("/getCards", cardController.getCards);
+router.post("/migrateCard", cardController.migrateCard);
 
 module.exports = router;
