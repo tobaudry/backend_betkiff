@@ -23,6 +23,37 @@ const getUsers = (req, res) => {
     .catch((error) => res.status(500).send(error.message));
 };
 
+const addMoneyToUsers = async (req, res) => {
+  const { idOrganisation } = req.body;
+  const dbPath = `organisations/${idOrganisation}/users`;
+
+  try {
+    // Récupérer les utilisateurs
+    const snapshot = await db.ref(dbPath).once("value");
+    const users = snapshot.val();
+
+    if (!users) {
+      return res.status(404).json({ message: "Aucun utilisateur trouvé." });
+    }
+
+    // Mise à jour des soldes des utilisateurs
+    const updates = {};
+    Object.keys(users).forEach((userId) => {
+      updates[`${dbPath}/${userId}/nbMonnaie`] = (users[userId].nbMonnaie || 0) + 50;
+    });
+
+    // Appliquer les mises à jour à la base de données
+    await db.ref().update(updates);
+
+    res.status(200).json({ message: "Monnaie ajoutée avec succès à tous les utilisateurs." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
 const getUserById = (req, res) => {
   const { idOrganisation } = req.body;
   const { uid } = req.params;
@@ -215,4 +246,5 @@ module.exports = {
   updateStatut,
   deleteUser,
   getIdOrgaByIdUser,
+  addMoneyToUsers,
 };
