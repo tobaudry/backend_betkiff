@@ -67,19 +67,40 @@ const openPackNew = async (req, res) => {
   const { idUser, cardsData, idOrganisation, idCollection } = req.body;
 
   try {
-    const probabilities = [
-      { rarity: "ultraRareCard", threshold: PROBA_ULTRA_RARE },
-      { rarity: "rareCard", threshold: PROBA_RARE },
-      { rarity: "communeCard", threshold: 1 }, // 100% de chances pour les communes si les autres échouent
-    ];
+    // Filtrer les raretés disponibles
+    const availableRarities = Object.keys(cardsData).filter(
+      (rarity) => cardsData[rarity] && cardsData[rarity].length > 0
+    );
 
-    // Générer un nombre aléatoire
+    if (availableRarities.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Aucune carte disponible." });
+    }
+
+    // Définir les probabilités ajustées en fonction des raretés disponibles
+    const baseProbabilities = {
+      ultraRareCard: PROBA_ULTRA_RARE,
+      rareCard: PROBA_RARE,
+      communeCard: 1, // Si aucune autre carte n'est choisie, on prend une commune
+    };
+
+    // Créer les probabilités ajustées
+    let totalProbability = availableRarities.reduce(
+      (sum, rarity) => sum + (baseProbabilities[rarity] || 0),
+      0
+    );
+    let cumulativeProbability = 0;
+
+    const probabilities = availableRarities.map((rarity) => {
+      cumulativeProbability += baseProbabilities[rarity] / totalProbability;
+      return { rarity, threshold: cumulativeProbability };
+    });
+
+    // Générer un nombre aléatoire et déterminer la rareté correspondante
     const randomNumber = Math.random();
-
-    // Trouver la rareté correspondante
     const selectedRarity = probabilities.find(
-      (p, index) =>
-        randomNumber < p.threshold || index === probabilities.length - 1
+      (p) => randomNumber < p.threshold
     ).rarity;
 
     // Sélectionner une carte aléatoire dans la catégorie choisie
