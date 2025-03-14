@@ -10,7 +10,6 @@ const getUsersMailByOrgansiation = async (idOrganisation) => {
     const usersSnapshot = await db.ref(dbPath).once("value");
     const users = usersSnapshot.val();
     const emails = Object.values(users).map(user => user.email);
-    console.log("emails", emails);
     return emails;
   } catch (error) {
     console.error("Erreur lors de la récupération des emails :", error);
@@ -365,9 +364,10 @@ const updateMiniBets = async (req, res) => {
   }
 };
 
+const calculateWinningsCommon = async ({ bet, bettors, winningCriteria }) => {
+  // eslint-disable-next-line no-unused-vars
+  const { odds } = bet;
 
-
-const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, betPath }) => {
   if (!winningCriteria) {
     throw new Error("Critère gagnant non spécifié.");
   }
@@ -375,12 +375,14 @@ const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, betPath 
   const winningBettors = [];
   for (const userId in bettors) {
     if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
+      // Utilisez Object.prototype.hasOwnProperty.call
       const bettor = bettors[userId];
       const coteGagnante = bettor.selectedOdd;
 
       // Vérifier si le parieur a choisi le bon résultat ou la bonne cote
       if (bettor.outcome === winningCriteria) {
         const winnings = bettor.betAmount * coteGagnante;
+        // Ajouter les gains au tableau
         if (winnings > 0) {
           winningBettors.push({ idUser: userId, winnings });
         }
@@ -388,25 +390,8 @@ const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, betPath 
     }
   }
 
-  // 🔥 Mettre à jour Firebase avec la liste des gagnants
-  if (betPath) {
-    try {
-      const betRef = db.ref(`organisations/${idOrganisation}/${betPath}/${idBet}`);
-
-      await betRef.update( {
-        distributeWinningDone: true,
-        winningBettors: winningBettors,
-      });
-
-      console.log("Mise à jour Firebase réussie :", winningBettors);
-    } catch (error) {
-      console.error("Erreur mise à jour Firebase :", error);
-    }
-  }
-
   return winningBettors;
 };
-
 
 const calculateWinningsBets = async (req, res) => {
   const { bet, bettors } = req.body;
@@ -467,7 +452,6 @@ const calculateWinningsMiniBets = async (req, res) => {
       bet,
       bettors,
       winningCriteria: winningOdd,
-      betPath:"miniBets"
     });
 
     res.status(200).json({
