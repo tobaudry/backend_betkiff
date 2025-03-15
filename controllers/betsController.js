@@ -364,7 +364,7 @@ const updateMiniBets = async (req, res) => {
   }
 };
 
-const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, idBet, path, idOrganisation, db, res }) => {
+const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, idBet, path, idOrganisation }) => {
     // eslint-disable-next-line no-unused-vars
     const { odds } = bet;
   
