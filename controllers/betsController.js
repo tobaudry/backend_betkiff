@@ -365,45 +365,55 @@ const updateMiniBets = async (req, res) => {
 };
 
 const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, idBet, path, idOrganisation }) => {
-    // eslint-disable-next-line no-unused-vars
-    const { odds } = bet;
-  
-    if (!winningCriteria) {
-      throw new Error("Critère gagnant non spécifié.");
-    }
-  
-    if (!idOrganisation || !path || !idBet) {
-      throw new Error("Paramètres manquants pour la mise à jour de la base de données.");
-    }
-  
-    const winningBettors = [];
-    for (const userId in bettors) {
-      if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
-        const bettor = bettors[userId];
-        const coteGagnante = bettor.selectedOdd;
-  
-        if (bettor.outcome === winningCriteria) {
-          const winnings = bettor.betAmount * coteGagnante;
-          if (winnings > 0) {
-            winningBettors.push({ idUser: userId, winnings });
-          }
+  if (!winningCriteria) {
+    throw new Error("Critère gagnant non spécifié.");
+  }
+
+  if (!idOrganisation || !path || !idBet) {
+    throw new Error("Paramètres manquants pour la mise à jour de la base de données.");
+  }
+
+  const winningBettors = [];
+  const losingBettors = [];
+
+  for (const userId in bettors) {
+    if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
+      const bettor = bettors[userId];
+      const coteGagnante = bettor.selectedOdd;
+
+      if (bettor.outcome === winningCriteria) {
+        const winnings = bettor.betAmount * coteGagnante;
+        if (winnings > 0) {
+          winningBettors.push({ idUser: userId, winnings });
         }
+      } else {
+        // L'utilisateur a perdu
+        losingBettors.push({ idUser: userId, lostAmount: bettor.betAmount });
       }
     }
-  
-    try {
-      const dbRef = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/winners`);
-  
-      for (const winner of winningBettors) {
-        await dbRef.push(winner);
-      }
-  
-      return winningBettors; // 🔹 Correction : On ne fait pas `res.status(...)` ici
-    } catch (error) {
-      console.error("Erreur lors de l'ajout des gagnants :", error);
-      throw new Error("Erreur serveur lors de l'ajout des gagnants");
+  }
+
+  try {
+    const dbRefWinners = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/winners`);
+    const dbRefLosers = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/losers`);
+
+    // 🔹 Ajout des gagnants dans la BDD
+    for (const winner of winningBettors) {
+      await dbRefWinners.push(winner);
     }
+
+    // 🔹 Ajout des perdants dans la BDD
+    for (const loser of losingBettors) {
+      await dbRefLosers.push(loser);
+    }
+
+    return { winningBettors, losingBettors }; // 🔥 On retourne les deux listes
+  } catch (error) {
+    console.error("Erreur lors de l'ajout des résultats :", error);
+    throw new Error("Erreur serveur lors de l'ajout des gagnants et perdants");
+  }
 };
+
 
 const calculateWinningsBets = async (req, res) => {
   const { bet, bettors, idBet, idOrganisation } = req.body;
