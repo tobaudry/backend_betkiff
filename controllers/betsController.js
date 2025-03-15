@@ -368,51 +368,41 @@ const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, idBet, p
     // eslint-disable-next-line no-unused-vars
     const { odds } = bet;
   
-  if (!winningCriteria) {
-    throw new Error("Critère gagnant non spécifié.");
-  }
+    if (!winningCriteria) {
+      throw new Error("Critère gagnant non spécifié.");
+    }
   
-  if (!idOrganisation || !path || !idBet) {
-    throw new Error("Paramètres manquants pour la mise à jour de la base de données.");
-  }
-
-  const winningBettors = [];
-  for (const userId in bettors) {
-    if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
-      const bettor = bettors[userId];
-      const coteGagnante = bettor.selectedOdd;
-
-      // Vérifier si le parieur a choisi le bon résultat
-      if (bettor.outcome === winningCriteria) {
-        const winnings = bettor.betAmount * coteGagnante;
-        if (winnings > 0) {
-          winningBettors.push({ idUser: userId, winnings });
+    if (!idOrganisation || !path || !idBet) {
+      throw new Error("Paramètres manquants pour la mise à jour de la base de données.");
+    }
+  
+    const winningBettors = [];
+    for (const userId in bettors) {
+      if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
+        const bettor = bettors[userId];
+        const coteGagnante = bettor.selectedOdd;
+  
+        if (bettor.outcome === winningCriteria) {
+          const winnings = bettor.betAmount * coteGagnante;
+          if (winnings > 0) {
+            winningBettors.push({ idUser: userId, winnings });
+          }
         }
       }
     }
-  }
-
-  try {
-    const dbRef = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/winners`);
-
-    // Ajout de chaque gagnant sans écraser les données existantes
-    for (const winner of winningBettors) {
-      await dbRef.push(winner);
-    }
-
-    res.status(200).json({
-      message: "Liste des gagnants ajoutée avec succès",
-      winners: winningBettors
-    });
-
-  } catch (error) {
-    console.error("Erreur lors de l'ajout des gagnants :", error);
-    res.status(500).json({
-      error: "Erreur serveur lors de l'ajout des gagnants"
-    });
-  }
   
-  return winningBettors;
+    try {
+      const dbRef = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/winners`);
+  
+      for (const winner of winningBettors) {
+        await dbRef.push(winner);
+      }
+  
+      return winningBettors; // 🔹 Correction : On ne fait pas `res.status(...)` ici
+    } catch (error) {
+      console.error("Erreur lors de l'ajout des gagnants :", error);
+      throw new Error("Erreur serveur lors de l'ajout des gagnants");
+    }
 };
 
 const calculateWinningsBets = async (req, res) => {
