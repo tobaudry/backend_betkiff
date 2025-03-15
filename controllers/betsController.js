@@ -364,25 +364,27 @@ const updateMiniBets = async (req, res) => {
   }
 };
 
-const calculateWinningsCommon = async ({ bet, bettors, winningCriteria }) => {
-  // eslint-disable-next-line no-unused-vars
-  const { odds } = bet;
-
+const calculateWinningsCommon = async ({ bet, bettors, winningCriteria, idBet, path, idOrganisation, db, res }) => {
+    // eslint-disable-next-line no-unused-vars
+    const { odds } = bet;
+  
   if (!winningCriteria) {
     throw new Error("Critère gagnant non spécifié.");
+  }
+  
+  if (!idOrganisation || !path || !idBet) {
+    throw new Error("Paramètres manquants pour la mise à jour de la base de données.");
   }
 
   const winningBettors = [];
   for (const userId in bettors) {
     if (Object.prototype.hasOwnProperty.call(bettors, userId)) {
-      // Utilisez Object.prototype.hasOwnProperty.call
       const bettor = bettors[userId];
       const coteGagnante = bettor.selectedOdd;
 
-      // Vérifier si le parieur a choisi le bon résultat ou la bonne cote
+      // Vérifier si le parieur a choisi le bon résultat
       if (bettor.outcome === winningCriteria) {
         const winnings = bettor.betAmount * coteGagnante;
-        // Ajouter les gains au tableau
         if (winnings > 0) {
           winningBettors.push({ idUser: userId, winnings });
         }
@@ -390,11 +392,31 @@ const calculateWinningsCommon = async ({ bet, bettors, winningCriteria }) => {
     }
   }
 
+  try {
+    const dbRef = db.ref(`organisations/${idOrganisation}/${path}/${idBet}/winners`);
+
+    // Ajout de chaque gagnant sans écraser les données existantes
+    for (const winner of winningBettors) {
+      await dbRef.push(winner);
+    }
+
+    res.status(200).json({
+      message: "Liste des gagnants ajoutée avec succès",
+      winners: winningBettors
+    });
+
+  } catch (error) {
+    console.error("Erreur lors de l'ajout des gagnants :", error);
+    res.status(500).json({
+      error: "Erreur serveur lors de l'ajout des gagnants"
+    });
+  }
+  
   return winningBettors;
 };
 
 const calculateWinningsBets = async (req, res) => {
-  const { bet, bettors } = req.body;
+  const { bet, bettors, idBet, idOrganisation } = req.body;
 
   if (!bet || !bettors) {
     return res
@@ -425,7 +447,10 @@ const calculateWinningsBets = async (req, res) => {
     const winningBettors = await calculateWinningsCommon({
       bet,
       bettors,
+      idBet,
       winningCriteria,
+      path: "bets",
+      idOrganisation,
     });
 
     res.status(200).json({
@@ -440,7 +465,7 @@ const calculateWinningsBets = async (req, res) => {
 };
 
 const calculateWinningsMiniBets = async (req, res) => {
-  const { bet, bettors, idBet, winningOdd } = req.body;
+  const { bet, bettors, idBet, winningOdd, idOrganisation } = req.body;
   if (!bet || !bettors || !idBet || !winningOdd) {
     return res
       .status(403)
@@ -451,7 +476,10 @@ const calculateWinningsMiniBets = async (req, res) => {
     const winningBettors = await calculateWinningsCommon({
       bet,
       bettors,
+      idBet,
       winningCriteria: winningOdd,
+      path: "miniBets",
+      idOrganisation,
     });
 
     res.status(200).json({
