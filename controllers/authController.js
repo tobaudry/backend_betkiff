@@ -23,7 +23,7 @@ const registerAndAddUser = async (req, res) => {
     const userData = {
       email,
       nomUser,
-      nbMonnaie: 65,
+      nbMonnaie: 100,
       statutUser: "Utilisateur",
       idUser: uid,
       idOrganisation,
